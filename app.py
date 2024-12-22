@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import io
 import contextlib
-import speech_recognition as sr
-import pyttsx3
 import wikipedia
 import datetime
 import requests
@@ -18,8 +16,6 @@ import torch
 import subprocess
 from ctypes import POINTER, cast
 from comtypes import CLSCTX_ALL
-from comtypes.client import CreateObject
-from ctypes.wintypes import DWORD
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 from bs4 import BeautifulSoup
 
@@ -34,10 +30,6 @@ model = AutoModelForCausalLM.from_pretrained("microsoft/DialoGPT-medium")
 if tokenizer.eos_token is None:
     tokenizer.add_special_tokens({'eos_token': '<|endoftext|>'})
     model.resize_token_embeddings(len(tokenizer))
-
-# create recognizers
-recognizer = sr.Recognizer()
-engine = pyttsx3.init()
 
 # Secure API keys by storing them in environment variables
 api_key = ("921bcee8ed642d28e47c4a003f6e5e9e")  # Ensure the environment variable is set correctly
@@ -65,26 +57,7 @@ class Ans:
 AnsWer = Ans()
 
 def listen():
-    """Listen to the user's command."""
-    with sr.Microphone() as source:
-        Ans.setAns(AnsWer,"Listening.")
-        audio = recognizer.listen(source)
-        try:
-            command = recognizer.recognize_google(audio)
-            print(f"User said: {command}")
-            return command.lower()
-        except sr.UnknownValueError:
-            Ans.setAns(AnsWer,"Sorry, I can't understand. Please type your command.")
-            # Ask for manual input if speech recognition fails
-            manual_command = input("User said (manual input): ")
-            #manual_command = "Hello"
-            return manual_command.lower()
-        except sr.RequestError:
-            Ans.setAns(AnsWer,"Sorry, my speech service is down. Please type your command.")
-            # Ask for manual input if the service is down
-            manual_command = input("User said: ")
-            #manual_command = "Hello"
-            return manual_command.lower()
+    return ''
 
 def greet():
     """Greet the user based on the time of day."""
@@ -1486,42 +1459,7 @@ def main(command):
         else:
             answer = get_response(command)
             Ans.setAns(AnsWer,answer)
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+
 app = Flask(__name__)
 
 # A simple AI function (replace this with your AI logic)
