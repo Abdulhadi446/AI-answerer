@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+        .chat-container {
+            width: 400px;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fefefe;
+        }
+        .message {
+            margin-bottom: 15px;
+        }
+        .message.user {
+            text-align: right;
+        }
+        .message.ai {
+            text-align: left;
+        }
+        .message p {
+            margin: 0;
+            display: inline-block;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .message.user p {
+            background-color: #d1e7ff;
+        }
+        .message.ai p {
+            background-color: #e9e9e9;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-area button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <div class="input-area">
+            <input type="text" id="question" placeholder="Type your message...">
+            <button onclick="askQuestion()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function appendMessage(content, sender) {
+            const chatBox = document.getElementById("chatBox");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+
+            const messageText = document.createElement("p");
+            messageText.innerText = content;
+
+            messageDiv.appendChild(messageText);
+            chatBox.appendChild(messageDiv);
+
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function askQuestion() {
+            const questionInput = document.getElementById("question");
+            const question = questionInput.value.trim();
+
+            if (!question) return;
+
+            // Append the user's question to the chat box
+            appendMessage(question, "user");
+
+            // Clear the input field
+            questionInput.value = "";
+
+            // Send the question to the server
+            $.ajax({
+                url: '/ask',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ question: question }),
+                success: function(response) {
+                    // Append the AI's response to the chat box
+                    appendMessage(response.answer, "ai");
+                },
+                error: function() {
+                    appendMessage("There was an error processing your request.", "ai");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
